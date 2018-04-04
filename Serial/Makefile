@@ -5,7 +5,7 @@ include Makefile.inc
 all : driver serial lbstime
 
 driver: driver.o serial lbstime
-	$(F90) driver.o -o driver $(LDLIBS)  
+	$(F90) driver.o -o driver $(LDLIBS) $(SYSLIBS)
 
 driver.o: driver.f90
 	$(F90) $(FFLAGS) driver.f90 -c  

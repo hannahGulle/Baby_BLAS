@@ -1,4 +1,4 @@
-fdef __cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
     double dot_(  int *num_threads, int *N, double *va, double *vb);
