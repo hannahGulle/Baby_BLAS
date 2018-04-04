@@ -8,7 +8,7 @@ driver: driver.o serial lbstime
 	$(F90) driver.o -o driver $(LDLIBS) $(SYSLIBS)
 
 driver.o: driver.f90
-	$(F90) $(FFLAGS) driver.f90 -c  
+	$(F90) $(FFLAGS) $(FUNC) driver.f90 -c  
 
 serial: 
 	cd serial && $(MAKE)

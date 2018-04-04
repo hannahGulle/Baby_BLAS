@@ -1,17 +1,17 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    void vvm_(  int *len, double *va, double *vb, double *ma);
+    void vvm_( int *num_threads, int *len, double *va, double *vb, double *ma);
 #ifdef __cplusplus
     }
 #endif
 
 // Computes the tensor product of two vectors 
 
-void  vvm_( int *len, double *va, double *vb, double *ma){
+void  vvm_( int *num_threads, int *len, double *va, double *vb, double *ma){
 
 	int i, j;
-
+	int threads = *num_threads;
 	int alength = *len;
 
 	for (i=0; i<alength; i++) {

@@ -1,3 +1,5 @@
+#include<stdio.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -13,9 +15,9 @@ double dot_( int *num_threads, int *N, double *va, double *vb ) {
 	int n = *N;
 	int nthreads = *num_threads;
 
-	for ( i = 0; i < n; i++ ) {
-
-		sum += *(va+i) * *(vb +i);
+	for ( i = 1; i < n+1; i++ ) {
+		sum += va[i] * vb[i];
 	}
+
 	return sum;
 }

@@ -1,17 +1,18 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-    void mmm_( int *len,  double *a, double *b, double*c );
+    void mmm_( int *num_threads, int *len,  double *a, double *b, double*c );
 #ifdef __cplusplus
     }
 #endif
 
 /*  S E R I A L   C O D E  */
 
-void mmm_( int *len,  double *a, double *b, double *c ){
+void mmm_( int *num_threads, int *len,  double *a, double *b, double *c ){
 
     int i, j, k;
     int veclen = *len;
+    int threads = *num_threads;
     int mod;
 
 #ifdef STRIP8

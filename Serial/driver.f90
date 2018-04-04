@@ -10,15 +10,17 @@ real (kind=8) :: wall_start, wall_end
 real (kind=8) :: cpu_start, cpu_end
 real (kind=8) :: trace
 
-integer :: startval, stopval, stepval
+integer :: startval, stopval, stepval, threads
 real (kind=8) :: walltime
 real (kind=8) :: cputime 
 external walltime, cputime
 
-character (len=8) :: carg1, carg2, carg3
+character (len=8) :: carg1, carg2, carg3, carg4
 
 real (kind=8), dimension(:), allocatable :: veca, vecb, vecx
 real (kind=8), dimension(:,:), allocatable :: matrixa, matrixb, matrixc
+real (kind=8) :: dot, dotProd
+external dot
 
 integer, parameter :: NUM_EVENTS = 2
 real (kind=4) :: rtime, ptime, mflops, mflips
@@ -33,12 +35,13 @@ integer :: native
 call get_command_argument(1, carg1)
 call get_command_argument(2, carg2)
 call get_command_argument(3, carg3)
+call get_command_argument(4, carg4)
 
 ! Use Fortran internal files to convert command line arguments to ints
 read (carg1,'(i8)') startval
 read (carg2,'(i8)') stopval
 read (carg3,'(i8)') stepval
- 
+read (carg4,'(i8)') threads
 
 
 
@@ -112,6 +115,8 @@ allocate ( matrixc(NDIM,NDIM), stat=ierr)
 !! ----------------------------------------------------
 !! ACCURACY TESTING BLOCK
 !! ----------------------------------------------------
+
+#ifdef MMM
 do i = 1, NDIM 
      veca(i) = 1.0
      vecb(i) = 1.0 / sqrt( dble(NDIM))
@@ -120,8 +125,23 @@ enddo
 matrixa = 0.0
 matrixb = 0.0
 
-call vvm(NDIM, veca, vecb, matrixa);
-call vvm(NDIM, veca, vecb, matrixb);
+call vvm(threads, NDIM, veca, vecb, matrixa);
+call vvm(threads, NDIM, veca, vecb, matrixb);
+#endif
+
+#ifdef VVM
+do i = 1, NDIM
+    vecb(i) = dble(NDIM)
+    veca(i) = 1.0 / dble(NDIM)
+enddo
+#endif
+
+#ifdef DOT
+do i = 1, NDIM
+    veca(i) = dble(NDIM)
+    vecb(i) = 1.0 / dble(NDIM)
+enddo
+#endif
 
 wall_start = walltime()
 cpu_start = cputime()
@@ -133,7 +153,18 @@ if (check .ne. PAPI_OK) then
     call exit()
 endif
 
-call mmm(NDIM, matrixa, matrixb, matrixc);
+#ifdef MMM
+call mmm(threads, NDIM, matrixa, matrixb, matrixc);
+#endif
+
+#ifdef VVM
+call vvm(threads, NDIM, veca, vecb, matrixc);
+#endif
+
+#ifdef DOT
+dotProd = dot(threads, NDIM, veca, vecb);
+#endif
+
 
 call PAPIF_read(eventSet, dp_ops, check)
 if (check .ne. PAPI_OK) then
@@ -158,11 +189,21 @@ call PAPIF_flips( rtime, ptime, flpins, mflips, check );
 !! ------------------------------------------------------
 !! TRACE BLOCK
 !! ------------------------------------------------------
-trace = 0.0;
 
+#ifdef MMM
+trace = 0.0
 do i=1, NDIM 
      trace = trace + matrixc(i,i)
 enddo
+#endif
+
+#ifdef VVM
+trace = 0.0
+do i=1, NDIM 
+     trace = trace + matrixc(i,i)
+enddo
+#endif
+
 !! -----------------------------------------------------
 !! END TRACE BLOCK
 !! ----------------------------------------------------
@@ -172,7 +213,12 @@ enddo
 !! -----------------------------------------------------
 !! RESULTS AND DEALLOCATION BLOCK
 !! -----------------------------------------------------
+
+#ifndef DOT
 print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, mflops
+#else
+print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflops
+#endif
 
 if (allocated(matrixa)) deallocate(matrixa)
 if (allocated(matrixb)) deallocate(matrixb)
