@@ -108,6 +108,7 @@ NDIM = iter
 
 allocate ( veca(NDIM), stat=ierr)
 allocate ( vecb(NDIM), stat=ierr)
+allocate ( vecx(NDIM), stat=ierr)
 allocate ( matrixa(NDIM,NDIM), stat=ierr)
 allocate ( matrixb(NDIM,NDIM), stat=ierr)
 allocate ( matrixc(NDIM,NDIM), stat=ierr)
@@ -143,6 +144,13 @@ do i = 1, NDIM
 enddo
 #endif
 
+#ifdef MVV
+do i = 1, NDIM
+    veca(i) = 1.0 / sqrt( dble(NDIM))
+enddo
+matrixa = 1.0 / sqrt (dble(NDIM))
+#endif
+
 wall_start = walltime()
 cpu_start = cputime()
 
@@ -165,6 +173,9 @@ call vvm(threads, NDIM, veca, vecb, matrixc);
 dotProd = dot(threads, NDIM, veca, vecb);
 #endif
 
+#ifdef MVV
+call mvv(threads, NDIM, matrixa, veca, vecx);
+#endif
 
 call PAPIF_read(eventSet, dp_ops, check)
 if (check .ne. PAPI_OK) then
@@ -202,6 +213,10 @@ trace = 0.0
 do i=1, NDIM 
      trace = trace + matrixc(i,i)
 enddo
+#endif
+
+#ifdef MVV
+trace = NDIM*vecx(NDIM/2)
 #endif
 
 !! -----------------------------------------------------
