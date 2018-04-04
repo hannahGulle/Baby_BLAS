@@ -232,7 +232,7 @@ trace = NDIM*vecx(NDIM/2)
 #ifndef DOT
 print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, mflops
 #else
-print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflops
+print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflips
 #endif
 
 if (allocated(matrixa)) deallocate(matrixa)

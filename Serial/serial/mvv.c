@@ -16,6 +16,5 @@ void mvv_( int *num_threads, int *N, double *ma, double *va, double *vr ){
 			
 			*(vr+j) += *(ma+i+j*n) * *(va+i);
 		}
-		printf("value @ %i is %d\n", j, *(vr+j));
 	}
 }
