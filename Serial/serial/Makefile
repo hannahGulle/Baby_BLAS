@@ -11,8 +11,11 @@ vvm.o : vvm.c
 mmm.o : mmm.c
 	$(CC) $(CFLAGS) -DSTRIP8  -c mmm.c
 
+dot.o : dot.c
+	$(CC) $(CFLAGS) -c dot.c
+
 lib: vvm.o mmm.o 
-	ar -rc libserial_bblas.a vvm.o mmm.o 
+	ar -rc libserial_bblas.a vvm.o mmm.o dot.o
 	ranlib libserial_bblas.a
 
 # Default Targets for Cleaning up the Environment

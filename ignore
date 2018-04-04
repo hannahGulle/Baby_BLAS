@@ -4,6 +4,3 @@
 #Library Files
 *.a
 *.lib
-
-#Executable Files
-*.exe
