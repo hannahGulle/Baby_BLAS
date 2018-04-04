@@ -1,0 +1,9 @@
+#Object Files
+*.o
+
+#Library Files
+*.a
+*.lib
+
+#Executable Files
+*.exe
