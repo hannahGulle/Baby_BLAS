@@ -146,9 +146,10 @@ enddo
 
 #ifdef MVV
 do i = 1, NDIM
-    veca(i) = 1.0 / sqrt( dble(NDIM))
+    veca(i) = 1.0 / dble(NDIM)
+    vecx(i) = 0.0
 enddo
-matrixa = 1.0 / sqrt (dble(NDIM))
+matrixa = 1.0
 #endif
 
 wall_start = walltime()
@@ -216,7 +217,10 @@ enddo
 #endif
 
 #ifdef MVV
-trace = NDIM*vecx(NDIM/2)
+trace = 0.0
+do i=1, NDIM
+    trace = trace + vecx(i)
+enddo
 #endif
 
 !! -----------------------------------------------------
