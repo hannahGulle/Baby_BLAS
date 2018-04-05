@@ -233,10 +233,12 @@ enddo
 !! RESULTS AND DEALLOCATION BLOCK
 !! -----------------------------------------------------
 
+mflops = (dp_ops(1)/(cpu_end-cpu_start))/1.0e6
+
 #ifndef DOT
 print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, mflops
 #else
-print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflips
+print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflops
 #endif
 
 if (allocated(matrixa)) deallocate(matrixa)
