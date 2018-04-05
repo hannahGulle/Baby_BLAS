@@ -86,18 +86,12 @@ if (check .ne. PAPI_OK) then
 endif
 
 ! Add the particular events to be counted to each event set
-call PAPIF_add_event(eventSet, PAPI_DP_OPS, check)
+call PAPIF_add_event(eventSet, PAPI_VEC_DP, check)
 if (check .ne. PAPI_OK) then
     print *, "Could Not Create PAPI_DP_OPS Event."
     call exit()
 endif
 
-! Start the counters in each event set
-call PAPIF_start(eventSet, check)
-if (check .ne. PAPI_OK) then
-    print *, "Could Not Start PAPI_DP_OPS Counter."
-    call exit()
-endif
 !! -----------------------------------------------------
 !! END PAPI BLOCK
 !! -----------------------------------------------------  
@@ -152,6 +146,14 @@ enddo
 matrixa = 1.0
 #endif
 
+
+! start the counters in each event set
+call PAPIF_start(eventSet, check)
+if (check .ne. PAPI_OK) then
+    print *, "Could Not Start PAPI_DP_OPS Counter."
+    call exit()
+endif
+
 wall_start = walltime()
 cpu_start = cputime()
 
@@ -189,7 +191,6 @@ wall_end = walltime()
 
 call PAPIF_flops( rtime, ptime, flpops, mflops, check );
 call PAPIF_flips( rtime, ptime, flpins, mflips, check );
-
 !! -----------------------------------------------------
 !! END ACCURACY TESTING BLOCK
 !! -----------------------------------------------------

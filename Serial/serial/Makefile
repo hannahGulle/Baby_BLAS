@@ -9,7 +9,7 @@ vvm.o : vvm.c
 	$(CC) $(CFLAGS) -c vvm.c
 
 mmm.o : mmm.c
-	$(CC) $(CFLAGS) -c -DSTRIP8 mmm.c
+	$(CC) $(CFLAGS) -c -DDSTRIP8 mmm.c
 
 dot.o : dot.c
 	$(CC) $(CFLAGS) -c dot.c
