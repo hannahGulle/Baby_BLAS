@@ -1,59 +1,38 @@
 program driver 
+#include "f90papi.h"
+!#include "omp.h"
 
+!!---------------------------------------------
+!! VARIABLE DECLARATIONS
+!!---------------------------------------------
 integer :: NDIM
 
 real (kind=8) :: wall_start, wall_end
 real (kind=8) :: cpu_start, cpu_end
 real (kind=8) :: trace
 
-
-integer :: startval, stopval, stepval, nthreads
+integer :: startval, stopval, stepval, threads
 real (kind=8) :: walltime
 real (kind=8) :: cputime 
 external walltime, cputime
 
 character (len=8) :: carg1, carg2, carg3, carg4
 
-real (kind=8), dimension(:), allocatable :: veca, vecb
+real (kind=8), dimension(:), allocatable :: veca, vecb, vecx
 real (kind=8), dimension(:,:), allocatable :: matrixa, matrixb, matrixc
+real (kind=8) :: dot, dotProd
+external dot
 
-#ifdef ACCURACY_TEST
+integer, parameter :: NUM_EVENTS = 2
+real (kind=4) :: rtime, ptime, mflops, mflips
+integer (kind=8) :: flpops, flpins
+integer (kind=4) :: check, eventSet
+integer (kind=8), dimension (NUM_EVENTS) :: dp_ops
+integer :: native
+!integer (kind=4) :: omp_get_thread_num
+!external omp_get_thread_num
 
-!This portion of code is ONLY used for verifying the accuracy of the code using
-!the matrix and matrix inverse stored on the class website.
-
-!Download the files from theochem using curl (don't store these on anvil!)
-call system("curl -s -o matrixa.dat --url http://theochem.mercer.edu/csc435/data/matrixa.dat")
-call system("curl -s -o matrixb.dat --url http://theochem.mercer.edu/csc435/data/matrixb.dat")
-
-NDIM = 100  ! The test files are 100x100 double precision matrix and its inverse
-nthreads = 2
-allocate ( matrixa(NDIM,NDIM), stat=ierr)
-allocate ( matrixb(NDIM,NDIM), stat=ierr)
-allocate ( matrixc(NDIM,NDIM), stat=ierr)
-open (unit=5,file="matrixa.dat",status="old")
-do i = 1, NDIM
-  do j = 1, NDIM
-     read(5,*) matrixa(j,i)
-  enddo
-enddo
-close(5)
-open (unit=5,file="matrixb.dat",status="old")
-do i = 1, NDIM
-  do j = 1, NDIM
-     read(5,*) matrixb(j,i)
-  enddo
-enddo
-close(5)
-
-! Delete the files from disk
-call system("rm matrixa.dat matrixb.dat")
-
-#else
-
-! Start the normal processing here.  Read the starting, stop, and step values
-! as well as the number of threads to use.
-! modified to use command line arguments
+!! RETRIEVE COMMAND LINE ARGUMENTS
 
 call get_command_argument(1, carg1)
 call get_command_argument(2, carg2)
@@ -61,75 +40,247 @@ call get_command_argument(3, carg3)
 call get_command_argument(4, carg4)
 
 ! Use Fortran internal files to convert command line arguments to ints
-
 read (carg1,'(i8)') startval
 read (carg2,'(i8)') stopval
 read (carg3,'(i8)') stepval
-read (carg4,'(i8)') nthreads 
+read (carg4,'(i8)') threads
 
-! Start the outermost loop to run tests of varying matrix size
- 
+
+
+!!----------------------------------------------
+!! DIMENSION ITERATION LOOP
+!!----------------------------------------------
 do iter = startval, stopval, stepval
+
+
+
+!! -------------------------------------------
+!! PAPI BLOCK
+!!---------------------------------------------
+! Papi Initialize Check Variable
+!check = PAPI_VER_CURRENT
+
+! Papi Intitialize Library
+!call PAPIF_library_init(check);
+!if ((check .ne. PAPI_VER_CURRENT) .and. (check .gt. 0)) then
+!    print *, "Papi Library Version Mismatch!"
+!    call exit()
+!endif
+
+!if (check .lt. 0) then
+!    print *, "Papi Initialization Error."
+!    call exit()
+!endif
+
+!call PAPIF_thread_init(omop_get_thread_num, 0, check);
+!if (check .ne. PAPI_OK) then
+!    print *, "PAPI Thread Initialization Error."
+!    call exit()
+!endif
+
+!call PAPIF_is_initialized(check);
+!if (check .ne. PAPI_LOW_LEVEL_INITED) then
+!    print *, "Papi Low Level Initialization Failed."
+!    call exit()
+!endif
+
+! Create a Papi Event Set
+!eventSet = PAPI_NULL;
+
+!call PAPIF_create_eventset(eventSet, check)
+!if (check .ne. PAPI_OK) then
+!    print *, "Could Not Create Papi Event Set."
+!    call exit()
+!endif
+
+! Add the particular events to be counted to each event set
+!call PAPIF_add_event(eventSet, PAPI_TOT_INS, check)
+!if (check .ne. PAPI_OK) then
+!    print *, "Could Not Create PAPI_TOT_INS Event."
+!    call exit()
+!endif
+
+!! -----------------------------------------------------
+!! END PAPI BLOCK
+!! -----------------------------------------------------  
+
+
 
 NDIM = iter
 
 allocate ( veca(NDIM), stat=ierr)
 allocate ( vecb(NDIM), stat=ierr)
+allocate ( vecx(NDIM), stat=ierr)
 allocate ( matrixa(NDIM,NDIM), stat=ierr)
 allocate ( matrixb(NDIM,NDIM), stat=ierr)
 allocate ( matrixc(NDIM,NDIM), stat=ierr)
 
-! Build veca and vecb which, their tensor product creates the two matrices 
-! to be multiplied.
+!! ----------------------------------------------------
+!! ACCURACY TESTING BLOCK
+!! ----------------------------------------------------
 
+#ifdef MMM
 do i = 1, NDIM 
      veca(i) = 1.0
      vecb(i) = 1.0 / sqrt( dble(NDIM))
 enddo
 
-! Zero the matrices using Fortran 90 syntax.
 matrixa = 0.0
 matrixb = 0.0
 
-call vvm(NDIM, veca, vecb, matrixa)
-call vvm(NDIM, veca, vecb, matrixb)
-
+call vvm(threads, NDIM, veca, vecb, matrixa);
+call vvm(threads, NDIM, veca, vecb, matrixb);
 #endif
+
+#ifdef VVM
+do i = 1, NDIM
+    vecb(i) = dble(NDIM)
+    veca(i) = 1.0 / dble(NDIM)
+enddo
+#endif
+
+#ifdef DOT
+do i = 1, NDIM
+    veca(i) = dble(NDIM)
+    vecb(i) = 1.0 / dble(NDIM)
+enddo
+#endif
+
+#ifdef MVV
+do i = 1, NDIM
+    veca(i) = 1.0 / dble(NDIM)
+    vecx(i) = 0.0
+enddo
+matrixa = 1.0
+#endif
+
+
+! start the counters in each event set
+!call PAPIF_start(eventSet, check)
+!if (check .ne. PAPI_OK) then
+!    print *, "Could Not Start PAPI_TOT_INS Counter."
+!    call exit()
+!endif
 
 wall_start = walltime()
 cpu_start = cputime()
 
-call mmm(nthreads, NDIM, matrixa, matrixb, matrixc)
+! Read set and set array back to zero
+!call PAPIF_accum(eventSet, dp_ops, check);
+!if (check .ne. PAPI_OK) then
+!    print *, "Could Not Accumulate Papi Event Set."
+!    call exit()
+!endif
+
+#ifdef MMM
+call mmm(threads, NDIM, matrixa, matrixb, matrixc);
+#endif
+
+#ifdef VVM
+call vvm(threads, NDIM, veca, vecb, matrixc);
+#endif
+
+#ifdef DOT
+dotProd = dot(threads, NDIM, veca, vecb);
+#endif
+
+#ifdef MVV
+call mvv(threads, NDIM, matrixa, veca, vecx);
+#endif
+
+!call PAPIF_read(eventSet, dp_ops, check)
+!if (check .ne. PAPI_OK) then
+!    print *, "Could Not Read Papi Event Set."
+!    call exit()
+!endif
 
 cpu_end = cputime()
 wall_end = walltime()
 
-trace = 0.0;
+!call PAPIF_flops( rtime, ptime, flpops, mflops, check );
+!call PAPIF_flips( rtime, ptime, flpins, mflips, check );
+!! -----------------------------------------------------
+!! END ACCURACY TESTING BLOCK
+!! -----------------------------------------------------
 
+
+
+
+
+!! ------------------------------------------------------
+!! TRACE BLOCK
+!! ------------------------------------------------------
+
+#ifdef MMM
+trace = 0.0
 do i=1, NDIM 
      trace = trace + matrixc(i,i)
 enddo
+#endif
 
-! Calculate megaflops based on CPU time and Walltime
-
-mflops  = 2*dble(NDIM)**3/ (cpu_end-cpu_start) / 1.0e6
-mflops2 = 2*dble(NDIM)**3/ (wall_end-wall_start)/ 1.0e6
- 
-print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start,  mflops, mflops2
-
-
-! Free the memory that was allocated based on which version of the program was
-! run.
-
-deallocate(matrixa)
-deallocate(matrixb)
-deallocate(matrixc)
-#ifndef ACCURACY_TEST
-deallocate(veca)
-deallocate(vecb)
-
+#ifdef VVM
+trace = 0.0
+do i=1, NDIM 
+     trace = trace + matrixc(i,i)
 enddo
 #endif
+
+#ifdef MVV
+trace = 0.0
+do i=1, NDIM
+    trace = trace + vecx(i)
+enddo
+#endif
+
+!! -----------------------------------------------------
+!! END TRACE BLOCK
+!! ----------------------------------------------------
+
+
+
+!! -----------------------------------------------------
+!! RESULTS AND DEALLOCATION BLOCK
+!! -----------------------------------------------------
+
+!mflops = (dp_ops(1)/(cpu_end-cpu_start))/1.0e6
+
+#ifndef DOT
+print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, mflops
+#else
+print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflops
+#endif
+
+if (allocated(matrixa)) deallocate(matrixa)
+if (allocated(matrixb)) deallocate(matrixb)
+if (allocated(matrixc)) deallocate(matrixc)
+if (allocated(veca))    deallocate(veca)
+if (allocated(vecb))    deallocate(vecb)
+if (allocated(vecx))    deallocate(vecx)
+
+!call PAPIF_stop(eventSet, dp_ops, check);
+!if (check .ne. PAPI_OK) then
+!    print *, "Could Not Stop Papi Counters."
+!    call exit()
+!endif
+
+!call PAPIF_cleanup_eventset(eventSet, check);
+!if (check .ne. PAPI_OK) then
+!    print *, "Could Not Cleanup Papi Event Set."
+!    call exit()
+!endif
+
+!call PAPIF_destroy_eventset(eventSet, check);
+!if (check .ne. PAPI_OK) then
+!    print *, "Could Not Destroy Papi Event Set."
+!    call exit()
+!endif
+
+!! -----------------------------------------------------
+!! END RESULTS AND DEALLOCATION BLOCK
+!! ----------------------------------------------------
+
+enddo
+!! END ITERATION LOOP
 
 end program driver 
  

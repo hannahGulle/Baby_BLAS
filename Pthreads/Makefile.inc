@@ -2,6 +2,8 @@
 
 F90 = gfortran
 CC  = gcc
-FFLAGS = -cpp -O2 #-DACCURACY_TEST
-CFLAGS = -O2
-LDLIBS = -L./pthreads -lpthreads_bblas -L./serial -lserial_bblas -L./lbstime -llbstime -lpthread
+FFLAGS = -cpp -O0
+CFLAGS = -std=c99 -O0
+FUNC = -DDOT
+LDLIBS = -L./pthreads -lpthreads_bblas -L./lbstime -llbstime -lpthread
+SYSLIBS = -lpapi -lpthread
