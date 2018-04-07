@@ -25,7 +25,7 @@ extern "C" {
 
 /* Function prototypes */
 
-double *dot_thread_worker();
+void *dot_thread_worker();
 
 /* Struct for passing data to thread functions */
 
@@ -35,7 +35,7 @@ struct args {
     int stopRow;
     double *VAptr;
     double *VBptr;
-    double *dot;
+    double dot;
 };
 
 double dot_( int *threads, int *len, double *va, double *vb){
@@ -47,6 +47,7 @@ double dot_( int *threads, int *len, double *va, double *vb){
     int numThreads = *threads;
     int matrixDimension = *len;
     int *numberOfRows;
+    double *dotProds;
     int startRow, stopRow;
     pthread_t *thread_id;
     struct args *thread_args;
@@ -57,7 +58,6 @@ double dot_( int *threads, int *len, double *va, double *vb){
         for (int i=0;i<matrixDimension;i++) {
         	sum += va[i] * vb[i];
 	} 
-	return sum;
     }
 
     else { 
@@ -76,6 +76,9 @@ double dot_( int *threads, int *len, double *va, double *vb){
         // Malloc an array to keep up with how many rows to work on in each thread
         numberOfRows = ( int * ) malloc( numThreads * sizeof(int) );
 
+	// Malloc an array to keep up with the sums of each thread
+	dotProds = ( double * ) malloc( numThreads * sizeof(double) );
+
         // Here we detemine the number of rows over which each thread will work
         for (int i=0; i<numThreads; i++ ){
             *(numberOfRows+i) = matrixDimension / numThreads;
@@ -87,6 +90,7 @@ double dot_( int *threads, int *len, double *va, double *vb){
         // Now that we know how many rows each thread will be responsible for computing,
         // malloc memory for the struct data, pack the struct with the thread-specific info
         // on where it is to start and stop processing, and create the thread using this data. 
+
         stopRow=0;
         for(int i=0; i < numThreads ; i++) {
             {   
@@ -98,7 +102,7 @@ double dot_( int *threads, int *len, double *va, double *vb){
                 thread_args->stopRow = stopRow; 
                 thread_args->VAptr = va;
                 thread_args->VBptr = vb;
-		thread_args->dot = 0.0;
+		thread_args->dot = *(dotProds+i);
 
                 pthread_create( thread_id+i, NULL, &dot_thread_worker, thread_args );
             }
@@ -109,8 +113,13 @@ double dot_( int *threads, int *len, double *va, double *vb){
 
         free(numberOfRows);
         free(thread_id);
+   	
+	for( int i = 0; i < numThreads; i++ ){
+		sum += dotProds[i];
+		printf("Sum at Thread %i\t is %d\n", i, sum);
+	}
     }
-    return (thread_args->dot);
+    return sum;
     // END OF MMM -- the memory pointed to by *C should now contain the product A.B
 }
 
@@ -124,22 +133,21 @@ void *dot_thread_worker( struct args *thread_args  ) {
     // from *A and *B, they never write to same memory locations in *C.
 
     int i;
-    double val, dot;
-    int rowStart, rowStop, N; 
+    int rowStart, rowStop; 
     double *va, *vb;
+    double sum = 0.0;
 
     // Unpack the thread_args struct into normal variables
-    N        =  thread_args->N;
     rowStart =  thread_args->startRow;
     rowStop  =  thread_args->stopRow; 
-    va        =  thread_args->VAptr;
-    vb        =  thread_args->VBptr;
-    dot        =  thread_args->dot;
+    va       =  thread_args->VAptr;
+    vb       =  thread_args->VBptr;
 
     // Process the rows for which this thread is responsible
     for (i=rowStart;i<rowStop;i++) {
-    	dot += va[i] * vb[i];
+    	sum += va[i] * vb[i];
     } 
+    thread_args->dot = sum;
 
     free(thread_args);
     pthread_exit(NULL);
