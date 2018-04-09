@@ -88,6 +88,8 @@ void ils_( int *threads, int *len,  double *a, double *b, double *x ){
             for (i=0;i<N;i++) *(x0+i) = *(x+i);
 
             // start the reduction process  (ref: Golub and van Loan, Chapter 10)
+#pragma omp parallel shared(N) private(i,j) reduction(+:sum1,sum2)
+{
             for (i=0;i<N;i++) { 
                 sum1 = 0.0;
                 for (j=0;j<i-1;j++) sum1+= *(a+i*N+j)* *(x0+j); 
@@ -95,7 +97,7 @@ void ils_( int *threads, int *len,  double *a, double *b, double *x ){
                 for (j=i+1;j<N;j++) sum2+= *(a+i*N+j)* *(x0+j); 
                 *(x+i) = ( *(b+i) - sum1 - sum2 ) / *(a+i*N+i);
             }
-
+}
             iteration++;
 
         }
