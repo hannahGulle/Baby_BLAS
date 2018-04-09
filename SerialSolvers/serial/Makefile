@@ -4,14 +4,15 @@ include ../Makefile.inc
 
 all: lib
 
-vvm.o : vvm.c
-	$(CC) $(CFLAGS) -c vvm.c
+# $(CFLAGS) from previous directory Makefile.inc
+ils.o : ils.c
+	$(CC) $(CFLAGS) -c ils.c
 
-mmm.o : mmm.c
-	$(CC) $(CFLAGS)  -c mmm.c
+dls.o : dls.c
+	$(CC) $(CFLAGS) -c dls.c
 
-lib: vvm.o mmm.o 
-	ar -rc libserial_bblas.a vvm.o mmm.o 
+lib: dls.o ils.o
+	ar -rc libserial_bblas.a dls.o ils.o
 	ranlib libserial_bblas.a
 
 # Default Targets for Cleaning up the Environment
