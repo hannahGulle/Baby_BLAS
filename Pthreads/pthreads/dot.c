@@ -35,7 +35,8 @@ struct args {
     int stopRow;
     double *VAptr;
     double *VBptr;
-    double dot;
+    double *dot;
+    int threadid;
 };
 
 double dot_( int *threads, int *len, double *va, double *vb){
@@ -102,22 +103,20 @@ double dot_( int *threads, int *len, double *va, double *vb){
                 thread_args->stopRow = stopRow; 
                 thread_args->VAptr = va;
                 thread_args->VBptr = vb;
-		thread_args->dot = *(dotProds+i);
+		thread_args->dot = dotProds;
+		thread_args->threadid = i;
 
                 pthread_create( thread_id+i, NULL, &dot_thread_worker, thread_args );
             }
         }
         for(int i=0; i < numThreads ; i++) {
             pthread_join( *(thread_id+i), NULL); 
+	    sum += *(dotProds+i);
         }
 
         free(numberOfRows);
         free(thread_id);
    	
-	for( int i = 0; i < numThreads; i++ ){
-		sum += dotProds[i];
-		printf("Sum at Thread %i\t is %d\n", i, sum);
-	}
     }
     return sum;
     // END OF MMM -- the memory pointed to by *C should now contain the product A.B
@@ -132,22 +131,27 @@ void *dot_thread_worker( struct args *thread_args  ) {
     // It is worth noting here that while the thread workers are reading simultaneously
     // from *A and *B, they never write to same memory locations in *C.
 
-    int i;
+    int i, id;
     int rowStart, rowStop; 
-    double *va, *vb;
+    double *va, *vb, *dot;
     double sum = 0.0;
+
 
     // Unpack the thread_args struct into normal variables
     rowStart =  thread_args->startRow;
     rowStop  =  thread_args->stopRow; 
     va       =  thread_args->VAptr;
     vb       =  thread_args->VBptr;
+    id	     =  thread_args->threadid;
+    dot      = thread_args->dot;
 
     // Process the rows for which this thread is responsible
     for (i=rowStart;i<rowStop;i++) {
     	sum += va[i] * vb[i];
     } 
-    thread_args->dot = sum;
+
+    dot[id] = sum;
+    printf("Sum on thread %i is %d\n", id, sum);
 
     free(thread_args);
     pthread_exit(NULL);
