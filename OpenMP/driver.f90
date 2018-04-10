@@ -245,7 +245,7 @@ enddo
 !mflops = (dp_ops(1)/(cpu_end-cpu_start))/1.0e6
 
 #ifndef DOT
-print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, mflops
+print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, threads
 #else
 print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflops
 #endif

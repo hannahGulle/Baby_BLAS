@@ -1,0 +1,39 @@
+#!/bin/bash
+#PBS -N 0ILS
+#PBS -m abe
+#PBS -M gulle_hc
+#PBS -j oe
+#PBS -k n
+#PBS -l nodes=1:hammer:ppn=32
+#
+cd ./Documents/CSC/435/BBLAS/SerialSolvers/
+./lsdriver 1
+./lsdriver 1
+./lsdriver 1
+./lsdriver 1
+./lsdriver 1
+./lsdriver 2
+./lsdriver 2
+./lsdriver 2
+./lsdriver 2
+./lsdriver 2
+./lsdriver 4
+./lsdriver 4
+./lsdriver 4
+./lsdriver 4
+./lsdriver 4
+./lsdriver 8
+./lsdriver 8
+./lsdriver 8
+./lsdriver 8
+./lsdriver 8
+./lsdriver 16
+./lsdriver 16
+./lsdriver 16
+./lsdriver 16
+./lsdriver 16
+./lsdriver 32
+./lsdriver 32
+./lsdriver 32
+./lsdriver 32
+./lsdriver 32
