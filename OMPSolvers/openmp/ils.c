@@ -70,11 +70,14 @@ void ils_( int *threads, int *len,  double *a, double *b, double *x ){
         x0 = malloc( N * sizeof(double) );
 
         // Fill the x0 vector with initial values of zero
-
+#pragma omp parallel shared(N)
+{
+	#pragma omp for
         for (i=0;i<N;i++) *(x+i) = 0.0;
 
         // Fill the x vector with b vector just so the initial convergence test will fail
-
+	
+	#pragma omp for
         for (i=0;i<N;i++) *(x0+i) = *(b+i);
 
         // If more than N/3 iterations are done, the direct solver is more efficient
@@ -84,12 +87,11 @@ void ils_( int *threads, int *len,  double *a, double *b, double *x ){
         while ( !converged(N,x,x0) && iteration < ITERATION_MAX ) {
 
             // copy last result to initial values
-
-            for (i=0;i<N;i++) *(x0+i) = *(x+i);
+	   #pragma omp for 
+           for (i=0;i<N;i++) *(x0+i) = *(x+i);
 
             // start the reduction process  (ref: Golub and van Loan, Chapter 10)
-#pragma omp parallel shared(N) private(i,j) reduction(+:sum1,sum2)
-{
+	   #pragma omp for reduction(+:sum1,sum2)
             for (i=0;i<N;i++) { 
                 sum1 = 0.0;
                 for (j=0;j<i-1;j++) sum1+= *(a+i*N+j)* *(x0+j); 
@@ -97,9 +99,8 @@ void ils_( int *threads, int *len,  double *a, double *b, double *x ){
                 for (j=i+1;j<N;j++) sum2+= *(a+i*N+j)* *(x0+j); 
                 *(x+i) = ( *(b+i) - sum1 - sum2 ) / *(a+i*N+i);
             }
-}
             iteration++;
-
+}
         }
         // the initial value array is no longer needed
         free(x0);
@@ -152,12 +153,12 @@ int converged( int N, double *a, double *b) {
     // find max in array b for tolerance scaling while computing sum
 
     maxb=*(b+0); 
-    sum = 0.0; 
+    sum = 0.0;
     for (i=0; i<N; i++) {
         maxb = fmax(maxb,fabs(*(b+i)));
         sum += (*(a+i)-*(b+i))*(*(a+i)-*(b+i));
     }
-    sum = sqrt(sum);
+   sum = sqrt(sum);
 
     // by dividing by the largest value in the b matrix we effectively
     // scale the 2-Norm so it can achieve machine precision

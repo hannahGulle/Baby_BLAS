@@ -6,7 +6,7 @@ integer :: NDIM
 real (kind=8) :: wall_start, wall_end
 real (kind=8) :: cpu_start, cpu_end
 
-integer :: nthreads
+integer (kind=8) :: nthreads
 real (kind=8) :: walltime
 real (kind=8) :: cputime 
 external walltime, cputime
@@ -74,12 +74,11 @@ DIAG_DOMINANT = .false.
 SPARSE_MATRIX = .false.
 
 NDIM = 100 
-nthreads = 1
 
 #ifdef ILS
-print *, "Performing Iterative Solver Accuracy Test"
+!print *, "Performing Iterative Solver Accuracy Test"
 #else
-print *, "Performing Direct Solver Accuracy Test"
+!print *, "Performing Direct Solver Accuracy Test"
 #endif
 
 !This portion of code is ONLY used for verifying the accuracy of the code using
@@ -97,7 +96,7 @@ call system("curl -s -o linsolve_b.dat --url http://theochem.mercer.edu/csc435/d
 call system("curl -s -o linsolve_x.dat --url http://theochem.mercer.edu/csc435/data/linsolve_x.dat")
 #endif
 
-print *, "Files loaded from theochem.mercer.edu"
+!print *, "Files loaded from theochem.mercer.edu"
 
 allocate ( matrixa(NDIM,NDIM), stat=ierr)
 allocate ( matrixb(NDIM,NDIM), stat=ierr)
@@ -124,12 +123,12 @@ do i = 1, NDIM
 enddo
 close(5)
 
-print *, "Files read into program"
+!print *, "Files read into program"
 
 ! Delete the files from disk
 call system("rm linsolve_a.dat linsolve_b.dat linsolve_x.dat")
 
-print *, "Files deleted from disk."
+!print *, "Files deleted from disk."
 
 
 ! If doing ILS or DLS testing, build matrix C explicitly 
@@ -186,11 +185,12 @@ do i=1, NDIM
    residual = max(residual, abs(vecx(i)-dble(i)))
 enddo
 
-mflops = (dp_ops(1)/(cpu_end-cpu_start))/1.0e6
-mflops2  = (2.0/3.0)*dble(NDIM)**3/ (cpu_end-cpu_start) / 1.0e6
+mflops = ((dp_ops(1)/(cpu_end-cpu_start))/1.0e6)
+mflops2  = (2.0/3.0)*dble(NDIM)**3/ (wall_end-wall_start) / 1.0e6
 
-print *, "Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops" 
-print *, NDIM, residual, cpu_end-cpu_start, wall_end-wall_start,  mflops2, mflops
+!print *, "Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops" 
+
+print *, NDIM, residual, cpu_end-cpu_start, wall_end-wall_start,  mflops2, mflops, nthreads
 
 ! Free the memory that was allocated based on which version of the program was
 ! run.

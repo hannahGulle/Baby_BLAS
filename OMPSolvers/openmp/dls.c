@@ -63,47 +63,44 @@ void dls_( int *threads, int *len,  double *a, double *b, double *x ){
         // Create an array to hold pivot swaps 
 
         p = malloc( (N-1) * sizeof(int) );
-
         for (k=0;k<N-1;k++) *(p+k)=k;
 
         // Search for largest value in the column and swap the 
         // entire row containing that value with the current
         // pivot row.
-
-#pragma omp parallel shared(N) private(j,k,rows, rows2)
+#pragma omp parallel shared(N)
 {
+	#pragma omp for
         for (k=0;k<N-1;k++) {
             pivotMax = *(a+k*N+k);
             iPivot = k; 
-            for (u=k;u<N;u++) {
+
+	    for (u=k; u<N; u++) {
                 if ( fabs(*(a+u*N+k)) > fabs(pivotMax) ) {
                     pivotMax = *(a+u*N+k);
                     iPivot = u;
                 }
             }
             // If a greater pivot value was found, swap the rows.
-            if ( iPivot != k ) {
-                u = iPivot; 
-                for (j=k;j<N;j++) {
+	    if ( iPivot != k ) {
+                u = iPivot;
+		for(j=k;j<N;j++) {
                     tmp = *(a+k*N+j);
                     *(a+k*N+j) = *(a+u*N+j);
                     *(a+u*N+j)=tmp;
                 }
-            }
-
+	    }
             // Now do block reduction
             *(p+k) = iPivot;
             if ( *(a+k*N+k) != ZERO ) {
-                for (rows=k+1;rows<N;rows++) { 
+   	        for (rows=k+1;rows<N;rows++) { 
                     *(a+rows*N+k) = *(a+rows*N+k) / *(a+k*N+k);
-
                     for (rows2=k+1;rows2<N;rows2++) { 
                         *(a+rows*N+rows2) = *(a+rows*N+rows2) - 
                             *(a+rows*N+k) * *(a+k*N+rows2) ;
                     }
                 }
-            }
-
+	     }
             else {
 
                 /* Handle the case of a zero pivot element, singular matrix */
@@ -113,10 +110,9 @@ void dls_( int *threads, int *len,  double *a, double *b, double *x ){
                 printf( "    -- EXECUTION HALTED --\n");
                 exit(1);
             }
-
-        }
+	}
 } 
-       // Now that we know we have reduced the matrices, start the 
+   // Now that we know we have reduced the matrices, start the 
         // back substitution process to solve for vector x.
 
 
@@ -126,21 +122,22 @@ void dls_( int *threads, int *len,  double *a, double *b, double *x ){
          * upper-triangular matrix formed in the elimination process
          * above. 
          */
-
         for (k=0; k<N-1; k++ ) {
             // Swap rows x with p(k) 
             tmp = *(b+k);
             *(b+k) = *(b+ *(p+k));
             *(b+ *(p+k)) = tmp;
-
             for (j=k+1;j<N;j++) 
                 *(b+j)= *(b+j) - *(b+k) * *(a+N*j+k);  
         } 
-
         // Now do the backward substitution to get the solution
         // vector x
 
         *(b+N-1) = *(b+N-1) / *(a+N*(N-1)+(N-1));
+
+
+#pragma omp parallel shared(N) private(i,j) reduction(+:tmp)
+{
         for (i=N-2;i>=0;i--){
             tmp = 0.0;
             for (j=i+1;j<N;j++) {
@@ -148,7 +145,7 @@ void dls_( int *threads, int *len,  double *a, double *b, double *x ){
             }
             *(b+i) = ( *(b+i) - tmp ) / *(a+i*N+i); 
         }
-
+}
         for (i=0;i<N;i++) *(x+i) = *(b+i);
 
         // At this point the solution to the system should be in vector x 
@@ -178,18 +175,21 @@ void dls_( int *threads, int *len,  double *a, double *b, double *x ){
         // not singular -- so it sould be possible to do the LU factorization.
         //   (modified from Golub and van Loan, Chapter 3)
 
+#pragma omp parallel shared(N) private(k,rows,rows2)
+{
         for (k=0; k<N-1; k++) {
             for (rows=k+1;rows<N;rows++) {
                 *(a+rows*N+k) = *(a+rows*N+k) / *(a+k*N+k);
-
+	
                 for (rows2=k+1;rows2<N;rows2++) { 
                     *(a+rows*N+rows2) = *(a+rows*N+rows2) - 
                         *(a+rows*N+k) * *(a+k*N+rows2) ;
                 }
             }
         }
+} 
 
-        // At this point the LU factorizaton should be done and we have to do two
+       // At this point the LU factorizaton should be done and we have to do two
         // triangular back substitutions.  The solution to Ax=b is solved by first 
         // solving Ly=b for y and then Ux=y for the solution vector x.
 
@@ -205,6 +205,7 @@ void dls_( int *threads, int *len,  double *a, double *b, double *x ){
         // with x
 
         *(b+N-1) = *(b+N-1) / *(a+N*(N-1)+(N-1));
+
         for (i=N-2;i>=0;i--){
             tmp = 0.0;
             for (j=i+1;j<N;j++) {
@@ -212,7 +213,6 @@ void dls_( int *threads, int *len,  double *a, double *b, double *x ){
             }
             *(b+i) = ( *(b+i) - tmp ) / *(a+i*N+i); 
         }
-
         for (i=0;i<N;i++) *(x+i) = *(b+i);
 
         // At this point the solution to the system should be in vector x 
@@ -231,6 +231,9 @@ int strictlyDiagonallyDominant( int N, double *a ) {
     testPassed = 1;
     row = 0;
     sum = 0.0;
+
+#pragma omp parallel shared(N) private(row,i) reduction(+:sum)
+{
     for (row=0;row<N;row++) { 
         if (testPassed) {
             sum = 0.0;
@@ -239,7 +242,7 @@ int strictlyDiagonallyDominant( int N, double *a ) {
             testPassed = fabs(*(a+row*N+row)) > sum;
         }
     }
-
-    return testPassed;
+} 
+   return testPassed;
 }
 
