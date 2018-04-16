@@ -1,0 +1,60 @@
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   1.8786749933497049E-011   0.0000000000000000        7.5101852416992188E-004         887   907.767212    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   8.5691453932668082E-012   0.0000000000000000        7.4696540832519531E-004         892   912.692871    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   2.7213786779611837E-011   0.0000000000000000        7.3599815368652344E-004         905   926.293091    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   8.5123019744060002E-012   0.0000000000000000        6.8593025207519531E-004         971   993.905701    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   5.7269744502264075E-012   0.0000000000000000        7.4100494384765625E-004         899   920.034363    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   7.4749095801962540E-012   0.0000000000000000        7.4601173400878906E-004         893   913.859619    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   1.3500311979441904E-012   0.0000000000000000        7.4481964111328125E-004         895   915.322266    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   3.8369307731045410E-012   0.0000000000000000        7.2002410888671875E-004         925   946.843323    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   9.0949470177292824E-013   0.0000000000000000        7.4481964111328125E-004         895   915.322266    
+ Performing Direct Solver Accuracy Test
+ Files loaded from theochem.mercer.edu
+ Files read into program
+ Files deleted from disk.
+ Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
+         100   1.4090950628542487E-012   0.0000000000000000        7.2193145751953125E-004         923   944.341736    
