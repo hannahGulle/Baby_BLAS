@@ -234,7 +234,7 @@ enddo
 !! RESULTS AND DEALLOCATION BLOCK
 !! -----------------------------------------------------
 
-mflops = (dp_ops(1)/(cpu_end-cpu_start))/1.0e6
+mflops = (dp_ops(1)/(wall_end-wall_start))/1.0e6
 
 #ifndef DOT
 print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, mflops

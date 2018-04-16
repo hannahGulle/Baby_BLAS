@@ -182,7 +182,7 @@ do i=1, NDIM
    residual = max(residual, abs(vecx(i)-dble(i)))
 enddo
 
-mflops = (dp_ops(1)/(cpu_end-cpu_start))/1.0e6
+mflops = (dp_ops(1)/(wall_end-wall_start))/1.0e6
 mflops2  = (2.0/3.0)*dble(NDIM)**3/ (wall_end-wall_start) / 1.0e6
 
 print *, "Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops" 

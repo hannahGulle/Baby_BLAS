@@ -4,6 +4,6 @@ F90 = gfortran
 CC  = gcc
 FFLAGS = -cpp -O3
 CFLAGS = -O3
-FUNC = -DILS
+FUNC = -DDLS -DSPARSE
 LDLIBS = -L./serial -lserial_bblas -L./lbstime -llbstime
 SYSLIBS = -lpapi

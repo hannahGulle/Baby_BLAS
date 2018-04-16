@@ -1,0 +1,51 @@
+#!/bin/bash
+#PBS -N 0DOT
+#PBS -m abe
+#PBS -M gulle_hc
+#PBS -j oe
+#PBS -k n
+#PBS -l nodes=1:hammer:ppn=1
+#
+cd ./Documents/CSC/435/BBLAS/Serial/
+./driver 30000 30000 1 1
+./driver 30000 30000 1 1
+./driver 30000 30000 1 1
+./driver 30000 30000 1 1
+./driver 30000 30000 1 1
+./driver 30000 30000 1 1
+./driver 40000 40000 1 1
+./driver 40000 40000 1 1
+./driver 40000 40000 1 1
+./driver 40000 40000 1 1
+./driver 40000 40000 1 1
+./driver 40000 40000 1 1
+./driver 50000 50000 1 1
+./driver 50000 50000 1 1
+./driver 50000 50000 1 1
+./driver 50000 50000 1 1
+./driver 50000 50000 1 1
+./driver 50000 50000 1 1
+./driver 60000 60000 1 1
+./driver 60000 60000 1 1
+./driver 60000 60000 1 1
+./driver 60000 60000 1 1
+./driver 60000 60000 1 1
+./driver 60000 60000 1 1
+./driver 70000 70000 1 1
+./driver 70000 70000 1 1
+./driver 70000 70000 1 1
+./driver 70000 70000 1 1
+./driver 70000 70000 1 1
+./driver 70000 70000 1 1
+./driver 80000 80000 1 1
+./driver 80000 80000 1 1
+./driver 80000 80000 1 1
+./driver 80000 80000 1 1
+./driver 80000 80000 1 1
+./driver 80000 80000 1 1
+./driver 90000 90000 1 1
+./driver 90000 90000 1 1
+./driver 90000 90000 1 1
+./driver 90000 90000 1 1
+./driver 90000 90000 1 1
+./driver 90000 90000 1 1

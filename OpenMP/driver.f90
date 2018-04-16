@@ -29,8 +29,6 @@ integer (kind=8) :: flpops, flpins
 integer (kind=4) :: check, eventSet
 integer (kind=8), dimension (NUM_EVENTS) :: dp_ops
 integer :: native
-!integer (kind=4) :: omp_get_thread_num
-!external omp_get_thread_num
 
 !! RETRIEVE COMMAND LINE ARGUMENTS
 
@@ -51,60 +49,6 @@ read (carg4,'(i8)') threads
 !! DIMENSION ITERATION LOOP
 !!----------------------------------------------
 do iter = startval, stopval, stepval
-
-
-
-!! -------------------------------------------
-!! PAPI BLOCK
-!!---------------------------------------------
-! Papi Initialize Check Variable
-!check = PAPI_VER_CURRENT
-
-! Papi Intitialize Library
-!call PAPIF_library_init(check);
-!if ((check .ne. PAPI_VER_CURRENT) .and. (check .gt. 0)) then
-!    print *, "Papi Library Version Mismatch!"
-!    call exit()
-!endif
-
-!if (check .lt. 0) then
-!    print *, "Papi Initialization Error."
-!    call exit()
-!endif
-
-!call PAPIF_thread_init(omop_get_thread_num, 0, check);
-!if (check .ne. PAPI_OK) then
-!    print *, "PAPI Thread Initialization Error."
-!    call exit()
-!endif
-
-!call PAPIF_is_initialized(check);
-!if (check .ne. PAPI_LOW_LEVEL_INITED) then
-!    print *, "Papi Low Level Initialization Failed."
-!    call exit()
-!endif
-
-! Create a Papi Event Set
-!eventSet = PAPI_NULL;
-
-!call PAPIF_create_eventset(eventSet, check)
-!if (check .ne. PAPI_OK) then
-!    print *, "Could Not Create Papi Event Set."
-!    call exit()
-!endif
-
-! Add the particular events to be counted to each event set
-!call PAPIF_add_event(eventSet, PAPI_TOT_INS, check)
-!if (check .ne. PAPI_OK) then
-!    print *, "Could Not Create PAPI_TOT_INS Event."
-!    call exit()
-!endif
-
-!! -----------------------------------------------------
-!! END PAPI BLOCK
-!! -----------------------------------------------------  
-
-
 
 NDIM = iter
 
@@ -155,22 +99,9 @@ matrixa = 1.0
 #endif
 
 
-! start the counters in each event set
-!call PAPIF_start(eventSet, check)
-!if (check .ne. PAPI_OK) then
-!    print *, "Could Not Start PAPI_TOT_INS Counter."
-!    call exit()
-!endif
-
 wall_start = walltime()
 cpu_start = cputime()
 
-! Read set and set array back to zero
-!call PAPIF_accum(eventSet, dp_ops, check);
-!if (check .ne. PAPI_OK) then
-!    print *, "Could Not Accumulate Papi Event Set."
-!    call exit()
-!endif
 
 #ifdef MMM
 call mmm(threads, NDIM, matrixa, matrixb, matrixc);
@@ -188,23 +119,9 @@ dotProd = dot(threads, NDIM, veca, vecb);
 call mvv(threads, NDIM, matrixa, veca, vecx);
 #endif
 
-!call PAPIF_read(eventSet, dp_ops, check)
-!if (check .ne. PAPI_OK) then
-!    print *, "Could Not Read Papi Event Set."
-!    call exit()
-!endif
 
 cpu_end = cputime()
 wall_end = walltime()
-
-!call PAPIF_flops( rtime, ptime, flpops, mflops, check );
-!call PAPIF_flips( rtime, ptime, flpins, mflips, check );
-!! -----------------------------------------------------
-!! END ACCURACY TESTING BLOCK
-!! -----------------------------------------------------
-
-
-
 
 
 !! ------------------------------------------------------
@@ -242,8 +159,7 @@ enddo
 !! RESULTS AND DEALLOCATION BLOCK
 !! -----------------------------------------------------
 
-!mflops = (dp_ops(1)/(cpu_end-cpu_start))/1.0e6
-
+mflops = (2.0/3.0)*dble(NDIM)**3/(wall_end-wall_start)/1.0e6
 #ifndef DOT
 print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, threads
 #else
@@ -256,24 +172,6 @@ if (allocated(matrixc)) deallocate(matrixc)
 if (allocated(veca))    deallocate(veca)
 if (allocated(vecb))    deallocate(vecb)
 if (allocated(vecx))    deallocate(vecx)
-
-!call PAPIF_stop(eventSet, dp_ops, check);
-!if (check .ne. PAPI_OK) then
-!    print *, "Could Not Stop Papi Counters."
-!    call exit()
-!endif
-
-!call PAPIF_cleanup_eventset(eventSet, check);
-!if (check .ne. PAPI_OK) then
-!    print *, "Could Not Cleanup Papi Event Set."
-!    call exit()
-!endif
-
-!call PAPIF_destroy_eventset(eventSet, check);
-!if (check .ne. PAPI_OK) then
-!    print *, "Could Not Destroy Papi Event Set."
-!    call exit()
-!endif
 
 !! -----------------------------------------------------
 !! END RESULTS AND DEALLOCATION BLOCK
