@@ -2,8 +2,8 @@
 
 F90 = gfortran 
 CC  = gcc
-FFLAGS = -cpp -O0 
-CFLAGS = -O0 -fopenmp
-FUNC = -DMMM
+FFLAGS = -cpp -O3
+CFLAGS = -O3 -fopenmp
+FUNC = -DDOT
 MYLIBS = -L./openmp -lopenmp_bblas -L./lbstime -llbstime 
 SYSLIBS = -lgomp -lpapi

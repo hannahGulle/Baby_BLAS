@@ -1,0 +1,32 @@
+#!/bin/bash
+#PBS -N DOT8
+#PBS -m abe
+#PBS -M gulle_hc
+#PBS -j oe
+#PBS -k n
+#PBS -l nodes=1:hammer:ppn=8
+#
+cd ./Documents/CSC/435/BBLAS/OpenMP/
+./driver 1000 1000 1 8
+./driver 2000 2000 1 8
+./driver 3000 3000 1 8
+./driver 4000 4000 1 8
+./driver 5000 5000 1 8
+./driver 6000 6000 1 8
+./driver 7000 7000 1 8
+./driver 8000 8000 1 8
+./driver 9000 9000 1 8
+./driver 10000 10000 1 8
+./driver 11000 11000 1 8
+./driver 12000 12000 1 8
+./driver 13000 13000 1 8
+./driver 14000 14000 1 8
+./driver 15000 15000 1 8
+./driver 20000 20000 1 8
+./driver 30000 30000 1 8
+./driver 40000 40000 1 8
+./driver 50000 50000 1 8
+./driver 60000 60000 1 8
+./driver 70000 70000 1 8
+./driver 80000 80000 1 8
+./driver 90000 90000 1 8

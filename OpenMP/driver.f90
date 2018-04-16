@@ -1,6 +1,5 @@
 program driver 
 #include "f90papi.h"
-!#include "omp.h"
 
 !!---------------------------------------------
 !! VARIABLE DECLARATIONS
@@ -158,12 +157,21 @@ enddo
 !! -----------------------------------------------------
 !! RESULTS AND DEALLOCATION BLOCK
 !! -----------------------------------------------------
+#ifdef MMM
+mflops = (2.0*dble(NDIM)**3 - dble(NDIM)**2) /(wall_end-wall_start)/1.0e6
+#elif MVV
+mflops = (dble(NDIM)*(2.0*dble(NDIM) - 2.0)) / (wall_end-wall_start)/1.0e6
+#elif VVM
+mflops = (dble(NDIM) * (dble(NDIM) - 1.0)) / (wall_end-wall_start)/1.0e6
+#elif DOT
+mflops = (2.0*dble(NDIM) - 2.0 ) / (wall_end-wall_start)/1.0e6
+#endif
 
-mflops = (2.0/3.0)*dble(NDIM)**3/(wall_end-wall_start)/1.0e6
+
 #ifndef DOT
-print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, threads
+print *, NDIM, trace, cpu_end-cpu_start, wall_end-wall_start, mflops, threads
 #else
-print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflops
+print *, NDIM, dotProd, cpu_end-cpu_start, wall_end-wall_start, mflops, threads
 #endif
 
 if (allocated(matrixa)) deallocate(matrixa)

@@ -18,7 +18,6 @@ void mvv_( int *num_threads, int *N, double *ma, double *va, double *vr ){
 
 #pragma omp parallel shared(n) private(i,j) 
 {
-	printf("Thread %d started\n", omp_get_thread_num() );
 
 	#pragma omp for
 	for ( j = 1; j < n; j++ ){
@@ -29,6 +28,5 @@ void mvv_( int *num_threads, int *N, double *ma, double *va, double *vr ){
 
 
 	PAPI_unregister_thread();
-	printf("Thread %d finished\n", omp_get_thread_num() );
 }
 }

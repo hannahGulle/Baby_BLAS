@@ -20,7 +20,6 @@ void  vvm_( int *num_threads, int *len, double *va, double *vb, double *ma){
 	
 #pragma omp parallel shared(alength) private(i,j)
 {
-	printf("Thread %d started\n", omp_get_thread_num() );
 
 	for (i=0; i<alength; i++) {
 		for (j=0; j<alength; j++) {
@@ -29,6 +28,5 @@ void  vvm_( int *num_threads, int *len, double *va, double *vb, double *ma){
 	}
 
 	PAPI_unregister_thread();
-	printf("Thread %d finished\n", omp_get_thread_num() );
 }
 }
