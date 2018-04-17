@@ -1,60 +1,10 @@
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   6.6791017161449417E-012   0.0000000000000000        7.4005126953125000E-004         900   921.219971    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   1.9468870959826745E-012   0.0000000000000000        6.4301490783691406E-004        1036   1060.23975    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   2.1458390619955026E-012   0.0000000000000000        5.0091743469238281E-004        1330   1361.00269    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   6.8780536821577698E-012   0.0000000000000000        6.3180923461914062E-004        1055   1079.04407    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   1.2818190953112207E-011   0.0000000000000000        4.7898292541503906E-004        1391   1423.32837    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   1.6733281427150359E-012   0.0000000000000000        5.6695938110351562E-004        1175   1202.46704    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   6.1817218011128716E-013   0.0000000000000000        5.2213668823242188E-004        1276   1305.69263    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   7.8159700933611020E-013   0.0000000000000000        5.1617622375488281E-004        1291   1320.76990    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   3.0553337637684308E-012   0.0000000000000000        7.3814392089843750E-004         903   923.600342    
- Performing Direct Solver Accuracy Test
- Files loaded from theochem.mercer.edu
- Files read into program
- Files deleted from disk.
- Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          PapiFlops
-         100   2.1982415887578100E-012   0.0000000000000000        7.0905685424804688E-004         940   961.488464    
+         100      921.219971    
+         100      1060.23975    
+         100      1361.00269    
+         100      1079.04407    
+         100      1423.32837    
+         100      1202.46704    
+         100      1305.69263    
+         100      1320.76990    
+         100      923.600342    
+         100      961.488464    

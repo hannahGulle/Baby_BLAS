@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N 3DOT_2
+#PBS -N 3MMM_2
 #PBS -m abe
 #PBS -M gulle_hc
 #PBS -j oe

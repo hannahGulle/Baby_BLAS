@@ -24,6 +24,7 @@ integer (kind=8), dimension (NUM_EVENTS) :: dp_ops
 
 character (len=8) :: carg1
 
+nthreads = 1
 call get_command_argument(1, carg1)
 read (carg1,'(i8)') nthreads
 
@@ -124,7 +125,7 @@ mflops2  = (2.0/3.0)*dble(NDIM)**3/ (wall_end-wall_start) / 1.0e6
 
 !print *, "Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          Threads" 
 
-print *, NDIM, residual, cpu_end-cpu_start, wall_end-wall_start,  mflops2, mflops, nthreads
+print *, NDIM, residual, cpu_end-cpu_start, wall_end-wall_start,  mflops2, nthreads
 
 ! Free the memory that was allocated based on which version of the program was
 ! run.
