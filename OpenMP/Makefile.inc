@@ -4,6 +4,6 @@ F90 = gfortran
 CC  = gcc
 FFLAGS = -cpp -O3
 CFLAGS = -O3 -fopenmp
-FUNC = -DDOT
+FUNC = -DMVV
 MYLIBS = -L./openmp -lopenmp_bblas -L./lbstime -llbstime 
 SYSLIBS = -lgomp -lpapi

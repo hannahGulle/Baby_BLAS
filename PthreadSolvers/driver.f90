@@ -123,7 +123,7 @@ enddo
 
 mflops2  = (2.0/3.0)*dble(NDIM)**3/ (wall_end-wall_start) / 1.0e6
 
-!print *, "Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          Threads" 
+print *, "Dimension     Residual                  CpuTime                   WallTime                  Est.Flop          Threads" 
 
 print *, NDIM, residual, cpu_end-cpu_start, wall_end-wall_start,  mflops2, nthreads
 
