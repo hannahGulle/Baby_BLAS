@@ -1,5 +1,5 @@
 #!/bin/bash
-#PBS -N 3MMM_20
+#PBS -N VVM20
 #PBS -m abe
 #PBS -M gulle_hc
 #PBS -j oe
