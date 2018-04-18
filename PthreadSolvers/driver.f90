@@ -121,7 +121,7 @@ do i=1, NDIM
    residual = max(residual, abs(vecx(i)-dble(i)))
 enddo
 
-mflops2  = (2.0)*dble(NDIM)**3/ (wall_end-wall_start) / 1.0e6
+mflops2  = (2.0/3.0)*dble(NDIM)**3/ (wall_end-wall_start) / 1.0e6
 
 
 print *, NDIM, residual, cpu_end-cpu_start, wall_end-wall_start,  mflops2, nthreads
